@@ -1,12 +1,12 @@
-RegisterNetEvent('RPD:allowRespawn')
-RegisterNetEvent('RPD:allowRevive')
-RegisterNetEvent('RPD:toggleDeath')
+RegisterNetEvent('DANIELGDM180_revive:allowRespawn')
+RegisterNetEvent('DANIELGDM180_revive:allowRevive')
+RegisterNetEvent('DANIELGDM180_revive:toggleDeath')
 
 -- =========================
 -- Config
 -- =========================
 local reviveWaitPeriod = 0 -- seconds
-local RPDeathEnabled = true
+local DANIELGDM180_reviveEnabled = true
 
 -- =========================
 -- State
@@ -20,7 +20,7 @@ local diedTime = nil
 -- =========================
 local function notify(msg)
     TriggerEvent('chat:addMessage', {
-        args = { "RPDeath", msg }
+        args = { "DANIELGDM180_revive", msg }
     })
 end
 
@@ -36,12 +36,12 @@ end)
 -- =========================
 -- Network Events
 -- =========================
-AddEventHandler('RPD:allowRespawn', function()
+AddEventHandler('DANIELGDM180_revive:allowRespawn', function()
     notify("Respawning...")
     allowRespawn = true
 end)
 
-AddEventHandler('RPD:allowRevive', function(from)
+AddEventHandler('DANIELGDM180_revive:allowRevive', function(from)
     local ped = PlayerPedId()
 
     if not IsEntityDead(ped) then return end
@@ -61,13 +61,13 @@ AddEventHandler('RPD:allowRevive', function(from)
     allowRevive = true
 end)
 
-AddEventHandler('RPD:toggleDeath', function()
-    RPDeathEnabled = not RPDeathEnabled
+AddEventHandler('DANIELGDM180_revive:toggleDeath', function()
+    DANIELGDM180_reviveEnabled = not DANIELGDM180_reviveEnabled
 
-    if RPDeathEnabled then
-        notify("RPDeath enabled.")
+    if DANIELGDM180_reviveEnabled then
+        notify("DANIELGDM180_revive enabled.")
     else
-        notify("RPDeath disabled.")
+        notify("DANIELGDM180_revive disabled.")
     end
 end)
 
@@ -105,7 +105,7 @@ CreateThread(function()
     while true do
         local ped = PlayerPedId()
 
-        if RPDeathEnabled and IsEntityDead(ped) then
+        if DANIELGDM180_reviveEnabled and IsEntityDead(ped) then
             diedTime = diedTime or GetGameTimer()
 
             SetPlayerInvincible(ped, true)

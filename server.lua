@@ -1,15 +1,15 @@
 -- =========================
--- RPDeath Commands
+-- DANIELGDM180_revive Commands
 -- =========================
 
 -- /respawn
 RegisterCommand("respawn", function(source)
-    TriggerClientEvent('RPD:allowRespawn', source)
+    TriggerClientEvent('DANIELGDM180_revive:allowRespawn', source)
 end, false)
 
 -- /toggledeath
 RegisterCommand("toggleDeath", function(source)
-    TriggerClientEvent('RPD:toggleDeath', source)
+    TriggerClientEvent('DANIELGDM180_revive:toggleDeath', source)
 end, false)
 
 -- /revive [id]
@@ -21,17 +21,17 @@ RegisterCommand("revive", function(source, args)
 
         if not target or not GetPlayerName(target) then
             TriggerClientEvent('chat:addMessage', source, {
-                args = { "RPDeath", "^1Invalid Player ID" }
+                args = { "DANIELGDM180_revive", "^1Invalid Player ID" }
             })
             return
         end
     end
 
-    TriggerClientEvent('RPD:allowRevive', target, source)
+    TriggerClientEvent('DANIELGDM180_revive:allowRevive', target, source)
 
     if target ~= source then
         TriggerClientEvent('chat:addMessage', source, {
-            args = { "RPDeath", "Player revived" }
+            args = { "DANIELGDM180_revive", "Player revived" }
         })
     end
 end, false)

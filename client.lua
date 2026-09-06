@@ -1,6 +1,7 @@
 RegisterNetEvent('DANIELGDM180_revive:allowRespawn')
 RegisterNetEvent('DANIELGDM180_revive:allowRevive')
 RegisterNetEvent('DANIELGDM180_revive:toggleDeath')
+RegisterNetEvent('DANIELGDM180_revive:notify')
 
 -- =========================
 -- Config
@@ -18,9 +19,23 @@ local diedTime = nil
 -- =========================
 -- Utilities
 -- =========================
-local function notify(msg)
-    TriggerEvent('chat:addMessage', {
-        args = { "DANIELGDM180_revive", msg }
+local notifyTypes = {
+    success = 'success',
+    warning = 'warning',
+    error   = 'error',
+    default = 'inform'
+}
+
+-- type: "default" | "success" | "warning" | "error"
+local function notify(msg, notifyType, duration)
+    local oxType = notifyTypes[notifyType] or notifyTypes.default
+
+    lib.notify({
+        title = 'DANIELGDM180_revive',
+        description = msg,
+        type = oxType,
+        duration = duration or 3500,
+        position = 'top-right'
     })
 end
 
@@ -36,8 +51,12 @@ end)
 -- =========================
 -- Network Events
 -- =========================
+AddEventHandler('DANIELGDM180_revive:notify', function(msg, notifyType, duration)
+    notify(msg, notifyType, duration)
+end)
+
 AddEventHandler('DANIELGDM180_revive:allowRespawn', function()
-    notify("Respawning...")
+    notify("Respawning...", "default")
     allowRespawn = true
 end)
 
@@ -52,12 +71,12 @@ AddEventHandler('DANIELGDM180_revive:allowRevive', function(from)
 
         if GetGameTimer() < waitUntil then
             local seconds = math.ceil((waitUntil - GetGameTimer()) / 1000)
-            notify("You must wait ^5" .. seconds .. "^0 seconds before reviving.")
+            notify("You must wait " .. seconds .. " seconds before reviving.", "warning")
             return
         end
     end
 
-    notify("Revived")
+    notify("Revived", "success")
     allowRevive = true
 end)
 
@@ -65,9 +84,9 @@ AddEventHandler('DANIELGDM180_revive:toggleDeath', function()
     DANIELGDM180_reviveEnabled = not DANIELGDM180_reviveEnabled
 
     if DANIELGDM180_reviveEnabled then
-        notify("DANIELGDM180_revive enabled.")
+        notify("toggleDeath enabled.", "success")
     else
-        notify("DANIELGDM180_revive disabled.")
+        notify("toggleDeath disabled.", "error")
     end
 end)
 

@@ -7,18 +7,20 @@ Standalone revive/respawn system for RP servers. Prevents the default FiveM deat
 - Disables `spawnmanager` auto-respawn so players stay downed on death
 - `/revive [id]` — revive yourself or a target player, with an optional self-revive cooldown
 - `/respawn` — send a player back to life at a random spawn point
-- `/toggleDeath` — enable/disable the whole revive system on the fly
+- `/toggledeath` — enable/disable the whole revive system on the fly
 - Configurable self-revive cooldown (`reviveWaitPeriod`)
-- Chat notifications via `chat:addMessage`
+- All notifications go through `ox_lib`'s `lib.notify`
 
 ## Installation
 
 1. Copy the `DANIELGDM180_revive` folder into your server's `resources` directory.
-2. Add to your `server.cfg`:
+2. Make sure `ox_lib` is installed and started before this resource.
+3. Add to your `server.cfg`:
    ```
+   ensure ox_lib
    ensure DANIELGDM180_revive
    ```
-3. Restart the resource or your server.
+4. Restart the resource or your server.
 
 ## Configuration
 
@@ -46,9 +48,39 @@ Add, remove, or edit entries as needed — each needs `x`, `y`, `z`, and `headin
 |---|---|---|
 | `/revive` | `/revive` or `/revive [id]` | Revives yourself, or the specified player ID |
 | `/respawn` | `/respawn` | Respawns the calling player at a random configured spawn point |
-| `/toggleDeath` | `/toggleDeath` | Toggles the revive system on/off server-wide per client |
+| `/toggledeath` | `/toggledeath` | Toggles the revive system on/off server-wide per client |
 
 By default these commands have no ACE permission restriction — restrict them in your permissions/framework as needed (e.g. limit `/revive [id]` and `/respawn` to staff).
+
+## Notifications
+
+Notifications now render through `ox_lib`'s `lib.notify`, replacing the old custom NUI toast system. The custom `html/` folder and `ui_page` have been removed from the resource.
+
+- Four types, mapped from the resource's own notify types to ox_lib types:
+
+  | Resource type | ox_lib type | Used for |
+  |---|---|---|
+  | `default` | `inform` | Respawning... |
+  | `success` | `success` | Revived / system enabled |
+  | `warning` | `warning` | Self-revive cooldown |
+  | `error` | `error` | System disabled |
+
+- Triggered client-side from `client.lua` via:
+  ```lua
+  notify("Message text", "success") -- type is optional, defaults to "default"
+  notify("Message text", "warning", 5000) -- optional 3rd arg overrides duration (ms)
+  ```
+- Under the hood this calls:
+  ```lua
+  lib.notify({
+      title = "DANIELGDM180_revive :: success",
+      description = "Message text",
+      type = "success",
+      duration = 5000,
+      position = "top-right"
+  })
+  ```
+- Server-side notifications still route through the `DANIELGDM180_revive:notify` net event, which calls the same client `notify()` function.
 
 ## How It Works
 
@@ -60,6 +92,7 @@ By default these commands have no ACE permission restriction — restrict them i
 
 - FiveM server (`fx_version 'cerulean'`, `lua54 'yes'`)
 - `spawnmanager` resource (started before this one)
+- `ox_lib` resource (started before this one)
 
 ## File Structure
 
@@ -74,3 +107,4 @@ DANIELGDM180_revive/
 
 - No QBCore/framework dependency — works on vanilla or any framework.
 - Self-revive cooldown only applies when a player revives *themselves* (`from == source`); reviving others is never rate-limited.
+- The `html/index.html` custom toast UI has been removed; delete that folder from any existing install when updating.

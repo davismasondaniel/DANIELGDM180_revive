@@ -6,5 +6,11 @@ author 'DANIELGDM180'
 description 'Prevent Deaths for RP purposes'
 version '1.0.0'
 
+shared_script '@ox_lib/init.lua'
+
 client_script "client.lua"
 server_script "server.lua"
+
+dependencies {
+    'ox_lib'
+}

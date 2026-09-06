@@ -8,7 +8,7 @@ RegisterCommand("respawn", function(source)
 end, false)
 
 -- /toggledeath
-RegisterCommand("toggleDeath", function(source)
+RegisterCommand("toggledeath", function(source)
     TriggerClientEvent('DANIELGDM180_revive:toggleDeath', source)
 end, false)
 
@@ -20,9 +20,7 @@ RegisterCommand("revive", function(source, args)
         target = tonumber(args[1])
 
         if not target or not GetPlayerName(target) then
-            TriggerClientEvent('chat:addMessage', source, {
-                args = { "DANIELGDM180_revive", "^1Invalid Player ID" }
-            })
+            TriggerClientEvent('DANIELGDM180_revive:notify', source, "Invalid Player ID", "error")
             return
         end
     end
@@ -30,8 +28,6 @@ RegisterCommand("revive", function(source, args)
     TriggerClientEvent('DANIELGDM180_revive:allowRevive', target, source)
 
     if target ~= source then
-        TriggerClientEvent('chat:addMessage', source, {
-            args = { "DANIELGDM180_revive", "Player revived" }
-        })
+        TriggerClientEvent('DANIELGDM180_revive:notify', source, "Player revived", "success")
     end
 end, false)
